@@ -36,8 +36,10 @@ class VimWindow(gtk.Window):
         #XXX: propper bind handling
         if event.string == "i":
             self.command_mode = False
+            self.mode_label.set_text("edit")
             return True
         elif event.keyval==ESCAPE:
+            self.mode_label.set_text("command")
             self.command_mode = True
         return self.command_mode
 
