@@ -1,0 +1,4 @@
+#!/usr/bin/python
+import sys
+import vimish
+vimish.main(sys.argv)
