@@ -12,6 +12,11 @@ class VimWindow(gtk.Window):
         self.command_mode = True
         self.buffer = gtksourceview.SourceBuffer()
         self.view = gtksourceview.SourceView(self.buffer)
+        self.status = gtk.Statusbar()
+        self.mode_label = gtk.Label("command")
+        self.status.add(self.mode_label)
+        self.info_label = gtk.Label("") #XXX: put engine infos in there
+
 
         #XXX: this handling is absolutely inacceptable
         #     unfortunately gtk has nothing better
@@ -22,11 +27,13 @@ class VimWindow(gtk.Window):
         self.add(self.vbox)
 
         self.vbox.add(self.view)
+        self.vbox.pack_start(self.status, False, False)
 
 
 
     def on_key(self, window, event):
         print  event
+        #XXX: propper bind handling
         if event.string == "i":
             self.command_mode = False
             return True
