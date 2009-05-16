@@ -34,6 +34,7 @@ class Buffer(object):
 
     def __getitem__(self, item):
         start = self.text_buffer.get_iter_at_line(item)
+        # the last line doesnt end with \n
         if item+1 < len(self):
             end = self.text_buffer.get_iter_at_line(item +1)
         else:
