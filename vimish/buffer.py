@@ -65,8 +65,7 @@ class Buffer(object):
 
             end = self.text_buffer.get_iter_at_line(item.stop)
 
-        self.text_buffer.select_range(start, end)
-        self.text_buffer.delete_selection(False, False)
+        self.text_buffer.delete(start, end)
 
         if isinstance(item, int):
             start = self.text_buffer.get_iter_at_line(item)
