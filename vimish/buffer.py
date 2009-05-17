@@ -20,8 +20,8 @@ class Buffer(object):
     @property
     def text(self):
         return self.text_buffer.get_text(
-                self.text_buffer.get_start_iter(),
-                self.text_buffer.get_end_iter()
+                self._start_iter(),
+                self._stop_iter()
                 )
 
     @text.setter
@@ -30,57 +30,60 @@ class Buffer(object):
 
     def append(self, text):
         self.text_buffer.insert(
-                self.text_buffer.get_end_iter(),
+                self._stop_iter(),
                 text)
 
     def __len__(self):
         return self.text_buffer.get_line_count()
 
     def __getitem__(self, item):
+        start, end = self._iter_range(item)
+        slice = self.text_buffer.get_slice(start, end)
         if isinstance(item, int):
-            start = self.text_buffer.get_iter_at_line(item)
-            # the last line doesnt end with \n
-            if item+1 < len(self):
-                end = self.text_buffer.get_iter_at_line(item +1)
-            else:
-                end = self.text_buffer.get_end_iter()
-            return self.text_buffer.get_slice(start, end)
+            return slice
         else:
-            if item.start is None:
-                start = self.text_buffer.get_start_iter()
-            else:
-                start = self.text_buffer.get_iter_at_line(item.start)
-
-            if item.stop is None or item.stop >= len(self):
-                end = self.text_buffer.get_end_iter()
-            else:
-                end = self.text_buffer.get_iter_at_line(item.stop)
-
-            slice = self.text_buffer.get_slice(start, end)
             return slice.splitlines(True)
-
 
     def __setitem__(self, item, value):
         if isinstance(value, list):
             #XXX: smarter?
             value = ''.join(value)
 
-
-        if isinstance(item, int):
-            start = self.text_buffer.get_iter_at_line(item)
-            end = self.text_buffer.get_iter_at_line(item +1)
-        else:
-            if item.start is None:
-                start = self.text_buffer.get_start_iter()
-
-            end = self.text_buffer.get_iter_at_line(item.stop)
-
+        start, end = self._iter_range(item)
         self.text_buffer.delete(start, end)
 
-        if isinstance(item, int):
-            start = self.text_buffer.get_iter_at_line(item)
-        elif item.start is None:
-            start = self.text_buffer.get_start_iter()
-        else:
-            start = self.text_buffer.get_iter_at_line(item.start)
+        start = self._start_iter(item)
         self.text_buffer.insert(start, value)
+
+    def _start_iter(self, pos=None):
+        if isinstance(pos, int):
+            return self._iter_at_line(pos)
+        elif pos is None or pos.start is None:
+            return self.text_buffer.get_start_iter()
+        else:
+            return self._iter_at_line(pos.start)
+
+    def _stop_iter(self, pos=None):
+        if pos is None:
+            return self.text_buffer.get_end_iter()
+        elif isinstance(pos, int):
+            # end of line iter = start of next line
+            if pos+1 < len(self):
+                return self._iter_at_line(pos+1)
+            else:
+                return self._stop_iter()
+        else:
+            if pos.stop is None:
+                return self._stop_iter()
+            elif pos.stop <=len(self):
+                return self._iter_at_line(pos.stop)
+            else:
+                self._stop_iter()
+
+    def _iter_range(self, slice):
+        start = self._start_iter(slice)
+        stop = self._stop_iter(slice)
+        return start, stop
+
+    def _iter_at_line(self, line):
+        return self.text_buffer.get_iter_at_line(line)

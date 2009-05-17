@@ -48,3 +48,14 @@ def test_buffer_get_slice_and_set_slice(buffer):
     assert buffer[2] == "helps\n"
 
 
+
+def test_buffer_del_slice(buffer):
+
+    buffer.text = "Test\ndelete\na\nslice\n"
+    del buffer[0]
+    assert buffrt.text == "delete\na\nslice\n"
+    del buffer[:2]
+    assert buffer.text == "slice\n"
+
+
+test_buffer_del_slice = None
