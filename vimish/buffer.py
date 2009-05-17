@@ -1,3 +1,13 @@
+"""
+    vimish buffer
+    ~~~~~~~~~~~~~
+
+    simple interface to various textbuffer implementations
+
+    :copyright: 2009 by Ronny Pfannschmidt
+    :license: LGPL 2 or later
+"""
+
 from gtk import TextBuffer
 
 
