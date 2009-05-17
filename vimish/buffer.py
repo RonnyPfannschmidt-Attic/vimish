@@ -44,13 +44,16 @@ class Buffer(object):
         else:
             return slice.splitlines(True)
 
+    def __delitem__(self, item):
+        start, end = self._iter_range(item)
+        self.text_buffer.delete(start, end)
+
     def __setitem__(self, item, value):
         if isinstance(value, list):
             #XXX: smarter?
             value = ''.join(value)
 
-        start, end = self._iter_range(item)
-        self.text_buffer.delete(start, end)
+        del self[item]
 
         start = self._start_iter(item)
         self.text_buffer.insert(start, value)
