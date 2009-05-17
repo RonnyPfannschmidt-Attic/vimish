@@ -12,6 +12,7 @@ class Buffer(object):
     def __init__(self, engine):
         self.engine = engine
         self.text_buffer = TextBuffer()
+        self.bufnr = engine.add(self)
 
     @property
     def text(self):
@@ -85,7 +86,13 @@ class Buffer(object):
 
 class Engine(object):
 
-    def create_buffer(self):
-        return Buffer(self)
+    def __init__(self):
+        self.buffers = []
 
+    def add(self, buffer):
+        self.buffers.append(buffer)
+        return len(self.buffers)
 
+    def remove(self, buffer):
+        self.buffers[buffer.burnr] = None
+        buffer.bufnr = None

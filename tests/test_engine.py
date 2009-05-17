@@ -1,7 +1,14 @@
+from vimish.engine import Buffer
 
+def test_engine_buffer_id(engine):
 
-def test_buffer_line_count(engine):
-    buffer = engine.create_buffer()
+    buffer = Buffer(engine)
+    buffer2 = Buffer(engine)
+
+    assert buffer.bufnr == 1
+    assert buffer2.bufnr == 2
+
+def test_buffer_line_count(buffer):
 
     buffer.text = "Test\ntest2"
     assert len(buffer) == 2
@@ -13,8 +20,8 @@ def test_buffer_line_count(engine):
     assert len(buffer) == 1
 
 
-def test_buffer_setitem_and_getitem(engine):
-    buffer = engine.create_buffer()
+def test_buffer_setitem_and_getitem(buffer):
+
     buffer.text = "Test text\n\nline2"
     assert len(buffer) == 3
 
@@ -30,12 +37,12 @@ def test_buffer_setitem_and_getitem(engine):
     assert buffer[2] == "line2"
 
 
-def test_buffer_get_slice_and_set_slice(engine):
-    buffer = engine.create_buffer()
+def test_buffer_get_slice_and_set_slice(buffer):
+
     buffer.text = "Test\nslicing\nwell"
+
     assert buffer[:2] == ["Test\n", "slicing\n"]
     assert buffer[2:] == ['well']
-
 
     buffer[:2] = ['more\n', 'slicing\n', 'helps\n']
     assert buffer[2] == "helps\n"
