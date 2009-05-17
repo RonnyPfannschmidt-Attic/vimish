@@ -1,5 +1,5 @@
-
-from vimish.engine import Engine, Buffer
+from vimish.engine import Engine
+from vimish.buffer import Buffer
 
 
 class ConftestPlugin:

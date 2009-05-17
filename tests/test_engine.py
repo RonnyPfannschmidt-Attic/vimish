@@ -1,4 +1,4 @@
-from vimish.engine import Buffer
+from vimish.buffer import Buffer
 
 def test_engine_buffer_id(engine):
 
