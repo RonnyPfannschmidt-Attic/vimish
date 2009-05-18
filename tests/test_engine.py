@@ -1,5 +1,8 @@
 from vimish.buffer import Buffer
 
+import py.test
+from operator import itemgetter
+
 def test_engine_buffer_id(engine):
 
     buffer = Buffer(engine)
@@ -52,9 +55,23 @@ def test_buffer_get_slice_and_set_slice(buffer):
 def test_buffer_del_slice(buffer):
 
     buffer.text = "Test\ndelete\na\nslice\n"
+
     del buffer[0]
     assert buffer.text == "delete\na\nslice\n"
+
     del buffer[:2]
     assert buffer.text == "slice\n"
 
+
+def test_buffer_wrong_index(buffer):
+
+    buffer.text = "Test\na\nbuffer"
+    assert py.test.raises(IndexError, "buffer[30]")
+
+
+def test_buffer_negative_index(buffer):
+
+    buffer.text = "Test\na\nbuffer"
+    
+    assert buffer[5:6] == []
 
