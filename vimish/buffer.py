@@ -60,9 +60,13 @@ class Buffer(object):
 
     def _start_iter(self, pos=None):
         if isinstance(pos, int):
+            if pos >= len(self):
+                raise IndexError
             return self._iter_at_line(pos)
         elif pos is None or pos.start is None:
             return self.text_buffer.get_start_iter()
+        elif pos.start >= len(self):
+            return self._stop_iter()
         else:
             return self._iter_at_line(pos.start)
 
@@ -73,15 +77,17 @@ class Buffer(object):
             # end of line iter = start of next line
             if pos+1 < len(self):
                 return self._iter_at_line(pos+1)
-            else:
+            elif pos+1 == len(self):
                 return self._stop_iter()
+            else:
+                raise IndexError
         else:
             if pos.stop is None:
                 return self._stop_iter()
-            elif pos.stop <=len(self):
+            elif pos.stop < len(self):
                 return self._iter_at_line(pos.stop)
             else:
-                self._stop_iter()
+                return self._stop_iter()
 
     def _iter_range(self, slice):
         start = self._start_iter(slice)
