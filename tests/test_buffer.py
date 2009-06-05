@@ -3,7 +3,7 @@ from vimish.buffer import Buffer
 import py.test
 from operator import itemgetter
 
-def test_engine_buffer_id(engine):
+def test_buffer_id(engine):
 
     buffer = Buffer(engine)
     buffer2 = Buffer(engine)
@@ -74,4 +74,6 @@ def test_buffer_negative_index(buffer):
     buffer.text = "Test\na\nbuffer"
     
     assert buffer[5:6] == []
+
+
 
