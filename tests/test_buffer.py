@@ -77,3 +77,12 @@ def test_buffer_negative_index(buffer):
 
 
 
+def test_buffer_cursor(buffer):
+    assert buffer.cursor == (0, 0)
+    buffer.text = "test with fun\nmore of it"
+    # cursor moves on insertion
+    assert buffer.cursor == (1, 10)
+
+    buffer.cursor = (1, 2)
+    assert buffer.cursor == (1, 2)
+

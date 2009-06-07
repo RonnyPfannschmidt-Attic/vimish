@@ -18,6 +18,25 @@ class Buffer(object):
         self.bufnr = engine.add(self)
 
     @property
+    def cursor(self):
+        offset = self.text_buffer.get_property('cursor-position')
+        offset_iter = self.text_buffer.get_iter_at_offset(offset)
+        return offset_iter.get_line(), offset_iter.get_line_offset()
+
+    @cursor.setter
+    def cursor(self, where):
+        """
+
+        :param where: tuple of (line, offset) or a fit text iterator
+        """
+        if isinstance(where, tuple):
+            iter = self.text_buffer.get_iter_at_line_offset(*where)
+        else:
+            iter = where
+        self.text_buffer.move_mark_by_name('insert', iter)
+
+
+    @property
     def text(self):
         return self.text_buffer.get_text(
                 self._start_iter(),
