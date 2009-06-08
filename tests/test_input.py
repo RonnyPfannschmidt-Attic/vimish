@@ -6,7 +6,7 @@ def split_input(input):
     return re.findall('<[\w-]+?>|[\w$]', input)
 
 class CheckInputMachine(InputMachine):
-    def input(self, input):
+    def press_keys(self, input):
         for press in split_input(input):
             result = self.keypress(press)
             if result is not None:
@@ -24,8 +24,12 @@ def test_split_input():
 
 
 
-def test_state():
-    machine = InputMachine(normal)
+def test_simple_dd():
+    machine = CheckInputMachine(normal)
     
 
-
+    call = machine.keypress("d")
+    assert call.call
+    final = machine.keypress("d")
+    assert final.final
+    assert final.last_match is call
