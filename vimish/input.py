@@ -1,32 +1,69 @@
 
-
 class Match(object):
-    pass
-
+    def __init__(self, next_tree=None, call=None, reset=None, final=None, last_match=None):
+        self.next_tree = next_tree
+        self.call = call
+        self.reset = reset
+        self.final = final
+        self.last_match = last_match
 
 
 class numbered(object):
+    final = False
+
     def __init__(self, *commands, **kw):
-        self.commands = commands,
+        self.commands = commands
         self.args = kw
 
-    def match(self,input):
+    def match(self, input, last_match):
+        print self
         for cmd, tree in self.commands:
+            print cmd, tree, input
             if cmd == input:
+                print "hit"
                 #XXX: aliases
-                return Match(next_tree=tree)
-
+                print self.args
+                print last_match.call
+                return Match(
+                        next_tree=tree,
+                        final=tree.final,
+                        last_match = last_match,
+                        call=(tree.args.get('call') or 
+                              last_match.call))
+    
         return Match(reset=any(
-                        cmd.startswith(input)
-                        for cmd, _ in self.commands))
+                        cmd[0].startswith(input)
+                        for cmd in self.commands))
+
+    def __repr__(self):
+        return "<Numbered %r (%s)>"%(
+                self.args, 
+                ' '.join(cmd 
+                         for cmd, tree in self.commands)
+                )
+
+class alias(str):
+    args = {} #XXX
+    final = True
+    def __repr__(self):
+        return "alias(%s)"%self
+
+class select(object):
+    args = {} #XXX
+    final = True
+    def __init__(self, selector):
+        self.selector = selector
+
+    def __repr__(self):
+        return '<Selector %r>'%self.selector
 
 
-
-def alias(x):
-    return x
-remove = copy = alias
-word = full_word = eol = line = alias
-select = alias
+remove = "remove"
+copy = "copy"
+word = "word"
+full_word = "full_word" 
+eol = "eol"
+line = "line"
 
 normal = numbered(
     ('d', numbered(
@@ -54,6 +91,7 @@ class InputMachine(object):
     def __init__(self, tree):
         self.tree = tree
         self.current = tree
+        self.match = Match()
         self.input = ""
 
 
@@ -62,16 +100,20 @@ class InputMachine(object):
         if press == '<Esc>':
             self.current = self.tree
             self.input = ""
+            self.match = Match()
         else:
             self.input += press
 
-        match = self.current.match(''.join(self.input))
+        match = self.current.match(''.join(self.input), self.match)
+        self.match = match
         if match.next_tree is not None:
             self.current = match.next_tree
-        elif match.reset:
+            self.input = ""
+        elif match.reset or match.final:
             self.current = self.tree
-            self.input.clear()
-        elif match.final:
-            return match
+            self.input = ""
+            self.match = Match()
+
+        return match
 
 
