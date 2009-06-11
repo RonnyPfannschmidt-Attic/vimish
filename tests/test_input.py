@@ -9,7 +9,7 @@ class CheckInputMachine(InputMachine):
     def press_keys(self, input):
         for press in split_input(input):
             result = self.keypress(press)
-            if result is not None:
+            if result.next_tree is not None:
                 yield result
 
 def test_split_input():
@@ -32,4 +32,10 @@ def test_simple_dd():
     assert call.call
     final = machine.keypress("d")
     assert final.final
-    assert final.last_match is call
+    assert final.previous_actor is call
+
+    call, final = machine.press_keys("22d2d")
+    assert call.count == 22
+    assert final.count == 2
+    assert final.previous_actor is call
+
