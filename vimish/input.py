@@ -16,7 +16,9 @@ class Match(object):
         self.count = count
 
     def __repr__(self):
-        return "<Match %s>" %' '.join("%s=%r"%(x, getattr(self, x)) for x in self.__slots__ if x[0]!='_')
+        return "<Match %s>" %' '.join(
+                "%s=%r"%(x, getattr(self, x)) 
+                for x in self.__slots__ if x[0]!='_' and getattr(self, x) is not None)
 
     @property
     def previous_actor(self):
@@ -123,13 +125,11 @@ class InputMachine(object):
     def keypress(self, press):
         #XXX: this is ugly painfull shit
         if press == '<Esc>':
-            self.current = self.tree
-            self.input = ""
-            self.match = Match()
+            match = Match(reset=True, next_tree=self.tree)
         else:
             self.input += press
+            match = self.current.match(''.join(self.input), self.match)
 
-        match = self.current.match(''.join(self.input), self.match)
         self.match = match
         if match.next_tree is not None:
             self.current = match.next_tree
@@ -138,7 +138,6 @@ class InputMachine(object):
         if match.reset or match.final:
             self.current = self.tree
             self.input = ""
-            self.match = Match()
 
         return match
 
