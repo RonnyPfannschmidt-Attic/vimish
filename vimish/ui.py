@@ -1,7 +1,7 @@
 
 
 import gtk
-import gtksourceview
+import gtksourceview2
 
 ESCAPE = gtk.gdk.keyval_from_name("Escape")
 
@@ -10,8 +10,8 @@ class VimWindow(gtk.Window):
     def __init__(self):
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
         self.command_mode = True
-        self.buffer = gtksourceview.SourceBuffer()
-        self.view = gtksourceview.SourceView(self.buffer)
+        self.buffer = gtksourceview2.Buffer()
+        self.view = gtksourceview2.View(self.buffer)
         self.status = gtk.Statusbar()
         self.mode_label = gtk.Label("command")
         self.status.add(self.mode_label)
