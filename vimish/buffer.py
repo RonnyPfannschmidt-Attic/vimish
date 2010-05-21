@@ -30,10 +30,11 @@ class Buffer(object):
         :param where: tuple of (line, offset) or a fit text iterator
         """
         if isinstance(where, tuple):
-            iter = self.text_buffer.get_iter_at_line_offset(*where)
+            assert len(where) == 2
+            giter = self.text_buffer.get_iter_at_line_offset(*where)
         else:
-            iter = where
-        self.text_buffer.move_mark_by_name('insert', iter)
+            giter = where
+        self.text_buffer.move_mark_by_name('insert', giter)
 
 
     @property
@@ -57,11 +58,11 @@ class Buffer(object):
 
     def __getitem__(self, item):
         start, end = self._iter_range(item)
-        slice = self.text_buffer.get_slice(start, end)
+        res = self.text_buffer.get_slice(start, end)
         if isinstance(item, int):
-            return slice
+            return res
         else:
-            return slice.splitlines(True)
+            return res.splitlines(True)
 
     def __delitem__(self, item):
         start, end = self._iter_range(item)
